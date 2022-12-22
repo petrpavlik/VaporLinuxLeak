@@ -14,7 +14,7 @@ func routes(_ app: Application) throws {
         for i in 0..<100 {
             let todo = Todo(title: "\(i)")
             try await todo.save(on: req.db)
-            try await Task.sleep(for: .seconds(1))
+            try await Task.sleep(nanoseconds: 1_000_000_000)
         }
         
         return "ok"
