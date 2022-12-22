@@ -36,19 +36,23 @@ public func configure(_ app: Application) throws {
 
 struct CreateTodosScheduledJob: AsyncScheduledJob {
     func run(context: QueueContext) async throws {
+        context.logger.error("CreateTodosScheduledJob started")
         for i in 0..<1000 {
             let todo = Todo(title: "\(i)")
             try await todo.save(on: context.application.db)
             try await Task.sleep(nanoseconds: 1_000_000_000)
         }
+        context.logger.error("CreateTodosScheduledJob ended")
     }
 }
 
 struct QueryTodosScheduledJob: AsyncScheduledJob {
     func run(context: QueueContext) async throws {
+        context.logger.error("QueryTodosScheduledJob started")
         for i in 0..<1000 {
             _ = try await Todo.query(on: context.application.db).all()
             try await Task.sleep(nanoseconds: 1_000_000_000)
         }
+        context.logger.error("QueryTodosScheduledJob ended")
     }
 }
