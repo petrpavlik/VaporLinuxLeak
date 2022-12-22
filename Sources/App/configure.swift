@@ -1,6 +1,7 @@
 import Fluent
 import FluentPostgresDriver
 import Vapor
+import Queues
 
 // configures your application
 public func configure(_ app: Application) throws {
@@ -21,4 +22,33 @@ public func configure(_ app: Application) throws {
 
     // register routes
     try routes(app)
+    
+    try app.queues.use(.memory())
+    
+    app.queues
+        .schedule(CreateTodosScheduledJob())
+        .hourly().at(0)
+    
+    app.queues
+        .schedule(QueryTodosScheduledJob())
+        .hourly().at(30)
+}
+
+struct CreateTodosScheduledJob: AsyncScheduledJob {
+    func run(context: QueueContext) async throws {
+        for i in 0..<1000 {
+            let todo = Todo(title: "\(i)")
+            try await todo.save(on: context.application.db)
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+        }
+    }
+}
+
+struct QueryTodosScheduledJob: AsyncScheduledJob {
+    func run(context: QueueContext) async throws {
+        for i in 0..<1000 {
+            _ = try await Todo.query(on: context.application.db).all()
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+        }
+    }
 }

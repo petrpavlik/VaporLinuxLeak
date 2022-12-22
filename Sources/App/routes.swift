@@ -10,15 +10,15 @@ func routes(_ app: Application) throws {
         "Hello, world!"
     }
     
-    app.get("leaks") { req async throws -> String in
-        for i in 0..<100 {
-            let todo = Todo(title: "\(i)")
-            try await todo.save(on: req.db)
-            try await Task.sleep(nanoseconds: 1_000_000_000)
-        }
-        
-        return "ok"
-    }
+//    app.get("leaks") { req async throws -> String in
+//        for i in 0..<100 {
+//            let todo = Todo(title: "\(i)")
+//            try await todo.save(on: req.db)
+//            try await Task.sleep(nanoseconds: 1_000_000_000)
+//        }
+//        
+//        return "ok"
+//    }
 
     try app.register(collection: TodoController())
 }
