@@ -12,10 +12,12 @@ public func configure(_ app: Application) throws {
         port: Environment.get("DATABASE_PORT").flatMap(Int.init(_:)) ?? PostgresConfiguration.ianaPortNumber,
         username: Environment.get("DATABASE_USERNAME") ?? "vapor_username",
         password: Environment.get("DATABASE_PASSWORD") ?? "vapor_password",
-        database: Environment.get("DATABASE_NAME") ?? "vapor_database"
+        database: Environment.get("DATABASE_NAME") ?? "vapor_database",
+        tlsConfiguration: .forClient(certificateVerification: .none)
     ), as: .psql)
 
     app.migrations.add(CreateTodo())
+    try app.autoMigrate().wait()
 
     // register routes
     try routes(app)
